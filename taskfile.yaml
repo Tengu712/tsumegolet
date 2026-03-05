@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - gradle assembleDebug
+
+  run:
+    deps:
+      - build
+    cmds:
+      - adb wait-for-device
+      - adb install build/outputs/apk/debug/tsumegolet-debug.apk
+      - adb shell am start -n com.skdassoc.tsumegolet/.MainActivity
