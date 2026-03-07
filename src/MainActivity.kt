@@ -13,27 +13,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
-private val AppColorScheme = lightColorScheme(
-    primary = Color.Black,
-    onPrimary = Color.White,
-    background = Color.White,
-    onBackground = Color.Black,
-    surface = Color.White,
-    onSurface = Color.Black,
-)
+private val AppColorScheme =
+    lightColorScheme(
+        primary = Color.Black,
+        onPrimary = Color.White,
+        background = Color.White,
+        onBackground = Color.Black,
+        surface = Color.White,
+        onSurface = Color.Black,
+    )
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme(colorScheme = AppColorScheme) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Button(onClick = {}) {
-                        Text("一覧")
-                    }
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Button(onClick = {}) { Text("一覧") }
                 }
             }
         }

@@ -12,7 +12,8 @@ CLI信者なのでね仕方ないね。
 - JDK
 - Android Studio Commandline Tools
 - proto
-- Taskfile
+- Taskfile (not required)
+- ktfmt (not required)
 
 次を実行してセットアップ:
 
