@@ -13,6 +13,10 @@ tasks:
       - adb install build/outputs/apk/debug/tsumegolet-debug.apk
       - adb shell am start -n com.skdassoc.tsumegolet/.MainActivity
 
+  test:
+    cmds:
+      - gradle test -Pandroid.useAndroidX=true --rerun-tasks
+
   format:
     cmds:
       - cmd: ktfmt --kotlinlang-style ./build.gradle.kts ./settings.gradle.kts $(find ./src -name "*.kt")

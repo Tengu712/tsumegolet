@@ -1,0 +1,54 @@
+package com.skdassoc.tsumegolet.model
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class BoardLayoutTest {
+    // 9路盤
+    @Test
+    fun fullBoard() {
+        val layout = computeBoardLayout(KifuData("", 9, 9))
+        assertEquals(9, layout.cols)
+        assertEquals(9, layout.rows)
+        assertEquals(0.5f, layout.left)
+        assertEquals(8.5f, layout.right)
+        assertEquals(0.5f, layout.top)
+        assertEquals(8.5f, layout.bottom)
+    }
+
+    // 19路番の左下7x7
+    @Test
+    fun bottomLeftClip() {
+        val layout = computeBoardLayout(KifuData("", 19, 19, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
+        assertEquals(7, layout.cols)
+        assertEquals(7, layout.rows)
+        assertEquals(0.5f, layout.left)
+        assertEquals(7.0f, layout.right)
+        assertEquals(0.0f, layout.top)
+        assertEquals(6.5f, layout.bottom)
+    }
+
+    // 19路番の右上7x5
+    @Test
+    fun topRightClip() {
+        val layout = computeBoardLayout(KifuData("", 19, 19, offsetCol = 12, offsetRow = 14, extentCols = 7, extentRows = 5))
+        assertEquals(7, layout.cols)
+        assertEquals(5, layout.rows)
+        assertEquals(0.0f, layout.left)
+        assertEquals(6.5f, layout.right)
+        assertEquals(0.5f, layout.top)
+        assertEquals(5.0f, layout.bottom)
+    }
+
+    // 19路番の中央9x8
+    @Test
+    fun centerClip() {
+        val layout = computeBoardLayout(KifuData("", 19, 19, offsetCol = 5, offsetRow = 7, extentCols = 9, extentRows = 8))
+        assertEquals(9, layout.cols)
+        assertEquals(8, layout.rows)
+        assertEquals(0.0f, layout.left)
+        assertEquals(9.0f, layout.right)
+        assertEquals(0.0f, layout.top)
+        assertEquals(8.0f, layout.bottom)
+    }
+}

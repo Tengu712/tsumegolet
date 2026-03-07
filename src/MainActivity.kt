@@ -21,30 +21,45 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.scene.ListScene
+import com.skdassoc.tsumegolet.scene.QuestionScene
 
 class MainActivity : ComponentActivity() {
-    private val AppColorScheme =
-        lightColorScheme(
-            primary = Color.Black,
-            onPrimary = Color.White,
-            background = Color.White,
-            onBackground = Color.Black,
-            surface = Color.White,
-            onSurface = Color.Black,
-        )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { MaterialTheme(colorScheme = AppColorScheme) { Content() } }
+        setContent { MaterialTheme(colorScheme = appColorScheme) { Content() } }
     }
 }
+
+private val appColorScheme =
+    lightColorScheme(
+        primary = Color.Black,
+        onPrimary = Color.White,
+        background = Color.White,
+        onBackground = Color.Black,
+        surface = Color.White,
+        onSurface = Color.Black,
+    )
 
 @Composable
 private fun Content() {
     // TODO: 記録されたデータを参照する
-    val mockKifuList = List(20) { i -> KifuData("詰め碁 ${i + 1}") }
+    val mockKifuList =
+        listOf(
+            KifuData("詰め碁 1", 19, 19, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7),
+            KifuData(
+                "詰め碁 2",
+                19,
+                19,
+                offsetCol = 12,
+                offsetRow = 12,
+                extentCols = 7,
+                extentRows = 7,
+            ),
+            KifuData("詰め碁 3", 19, 19, offsetCol = 5, offsetRow = 3, extentCols = 9, extentRows = 6),
+        )
     val navController = rememberNavController()
 
     Surface(
@@ -57,7 +72,22 @@ private fun Content() {
                     Button(onClick = { navController.navigate("list") }) { Text("一覧") }
                 }
             }
-            composable("list") { ListScene(mockKifuList) }
+            composable("list") {
+                ListScene(mockKifuList) { index -> navController.navigate("question/$index") }
+            }
+            composable("question/{index}") { backStackEntry ->
+                val kifu =
+                    backStackEntry.arguments?.getString("index")?.toIntOrNull()?.let {
+                        mockKifuList.getOrNull(it)
+                    }
+                if (kifu != null) {
+                    QuestionScene(kifu)
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Not Found")
+                    }
+                }
+            }
         }
     }
 }
