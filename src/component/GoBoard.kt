@@ -12,6 +12,7 @@ import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.computeBoardLayout
 
 private val boardSize = 0.9f
+private val starSize = 0.15f
 
 @Composable
 fun GoBoard(kifu: KifuData, maxWidth: Dp) {
@@ -35,6 +36,12 @@ fun GoBoard(kifu: KifuData, maxWidth: Dp) {
         for (col in 0 until layout.cols) {
             val x = col * cell + cell / 2
             drawLine(Color.Black, Offset(x, t), Offset(x, b), stroke)
+        }
+
+        for ((col, row) in layout.stars) {
+            val x = col * cell + cell / 2
+            val y = row * cell + cell / 2
+            drawCircle(Color.Black, radius = cell * starSize, center = Offset(x, y))
         }
     }
 }

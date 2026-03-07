@@ -14,11 +14,25 @@ class BoardLayoutTest {
         assertEquals(8.5f, layout.right)
         assertEquals(0.5f, layout.top)
         assertEquals(8.5f, layout.bottom)
+        assertEquals(emptyList<Pair<Int, Int>>(), layout.stars)
+    }
+
+    // 13路盤の左下7x7
+    @Test
+    fun bottomLeftClip() {
+        val layout = computeBoardLayout(KifuData("", BoardSize.Thirteen, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
+        assertEquals(7, layout.cols)
+        assertEquals(7, layout.rows)
+        assertEquals(0.5f, layout.left)
+        assertEquals(7.0f, layout.right)
+        assertEquals(0.0f, layout.top)
+        assertEquals(6.5f, layout.bottom)
+        assertEquals(listOf(Pair(3, 3), Pair(6, 0)), layout.stars)
     }
 
     // 19路盤の左下7x7
     @Test
-    fun bottomLeftClip() {
+    fun bottomLeftClip2() {
         val layout = computeBoardLayout(KifuData("", BoardSize.Nineteen, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
         assertEquals(7, layout.cols)
         assertEquals(7, layout.rows)
@@ -26,6 +40,7 @@ class BoardLayoutTest {
         assertEquals(7.0f, layout.right)
         assertEquals(0.0f, layout.top)
         assertEquals(6.5f, layout.bottom)
+        assertEquals(listOf(Pair(3, 3)), layout.stars)
     }
 
     // 19路盤の右上7x5
@@ -38,6 +53,7 @@ class BoardLayoutTest {
         assertEquals(6.5f, layout.right)
         assertEquals(0.5f, layout.top)
         assertEquals(5.0f, layout.bottom)
+        assertEquals(listOf(Pair(3, 3)), layout.stars)
     }
 
     // 19路盤の中央9x8
@@ -50,5 +66,6 @@ class BoardLayoutTest {
         assertEquals(9.0f, layout.right)
         assertEquals(0.0f, layout.top)
         assertEquals(8.0f, layout.bottom)
+        assertEquals(listOf(Pair(4, 5)), layout.stars)
     }
 }
