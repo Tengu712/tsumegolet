@@ -19,7 +19,9 @@ fun GoBoard(kifu: KifuData, maxWidth: Dp, maxHeight: Dp) {
     val layout = computeBoardLayout(kifu)
     val cellSize = minOf(maxWidth / layout.cols, maxHeight / layout.rows)
 
-    Canvas(modifier = Modifier.padding(12.dp).size(cellSize * layout.cols, cellSize * layout.rows)) {
+    Canvas(
+        modifier = Modifier.padding(12.dp).size(cellSize * layout.cols, cellSize * layout.rows)
+    ) {
         val cell = size.width / layout.cols
         val stroke = 1.dp.toPx()
 

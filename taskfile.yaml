@@ -19,7 +19,7 @@ tasks:
 
   format:
     cmds:
-      - cmd: ktfmt --kotlinlang-style ./build.gradle.kts ./settings.gradle.kts $(find ./src -name "*.kt")
+      - cmd: ktfmt --kotlinlang-style ./build.gradle.kts ./settings.gradle.kts $(find ./src ./test -name "*.kt")
         platforms: [darwin, linux]
-      - cmd: powershell -Command "ktfmt --kotlinlang-style ./build.gradle.kts ./settings.gradle.kts (Get-ChildItem -Recurse ./src -Filter *.kt).FullName"
+      - cmd: powershell -Command "ktfmt --kotlinlang-style ./build.gradle.kts ./settings.gradle.kts (Get-ChildItem -Recurse ./src, ./test -Filter *.kt).FullName"
         platforms: [windows]
