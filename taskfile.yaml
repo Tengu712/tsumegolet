@@ -3,7 +3,7 @@ version: '3'
 tasks:
   build:
     cmds:
-      - gradle assembleDebug
+      - gradle assembleDebug -Pandroid.useAndroidX=true
 
   run:
     deps:
