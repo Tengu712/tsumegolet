@@ -12,12 +12,13 @@ data class BoardLayout(
 fun computeBoardLayout(kifuData: KifuData): BoardLayout {
     val cols = kifuData.extentCols
     val rows = kifuData.extentRows
-    return BoardLayout(
-        cols = cols,
-        rows = rows,
-        left = if (kifuData.offsetCol > 0) 0f else 0.5f,
-        right = if (kifuData.offsetCol + cols < kifuData.boardCols) cols.toFloat() else cols - 0.5f,
-        top = if (kifuData.offsetRow + rows < kifuData.boardRows) 0f else 0.5f,
-        bottom = if (kifuData.offsetRow > 0) rows.toFloat() else rows - 0.5f,
-    )
+
+    val boardSize = kifuData.boardSize.value
+
+    val left = if (kifuData.offsetCol > 0) 0f else 0.5f
+    val right = if (kifuData.offsetCol + cols < boardSize) cols.toFloat() else cols - 0.5f
+    val top = if (kifuData.offsetRow + rows < boardSize) 0f else 0.5f
+    val bottom = if (kifuData.offsetRow > 0) rows.toFloat() else rows - 0.5f
+
+    return BoardLayout(cols, rows, left, right, top, bottom)
 }

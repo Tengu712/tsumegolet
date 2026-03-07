@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.skdassoc.tsumegolet.model.BoardSize
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.scene.ListScene
 import com.skdassoc.tsumegolet.scene.QuestionScene
@@ -48,17 +49,30 @@ private fun Content() {
     // TODO: 記録されたデータを参照する
     val mockKifuList =
         listOf(
-            KifuData("詰め碁 1", 19, 19, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7),
+            KifuData(
+                "詰め碁 1",
+                BoardSize.Nineteen,
+                offsetCol = 0,
+                offsetRow = 0,
+                extentCols = 7,
+                extentRows = 7,
+            ),
             KifuData(
                 "詰め碁 2",
-                19,
-                19,
+                BoardSize.Nineteen,
                 offsetCol = 12,
                 offsetRow = 12,
                 extentCols = 7,
                 extentRows = 7,
             ),
-            KifuData("詰め碁 3", 19, 19, offsetCol = 5, offsetRow = 3, extentCols = 9, extentRows = 6),
+            KifuData(
+                "詰め碁 3",
+                BoardSize.Nineteen,
+                offsetCol = 5,
+                offsetRow = 3,
+                extentCols = 9,
+                extentRows = 6,
+            ),
         )
     val navController = rememberNavController()
 

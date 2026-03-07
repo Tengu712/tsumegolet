@@ -26,9 +26,7 @@ android {
             kotlin.srcDirs("src")
             manifest.srcFile("AndroidManifest.xml")
         }
-        getByName("test") {
-            kotlin.srcDirs("test")
-        }
+        getByName("test") { kotlin.srcDirs("test") }
     }
 }
 

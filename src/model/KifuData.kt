@@ -4,12 +4,11 @@ data class KifuData(
     val title: String,
 
     // 碁盤のサイズ
-    val boardCols: Int,
-    val boardRows: Int,
+    val boardSize: BoardSize,
 
     // 碁盤のクリップ領域
     val offsetCol: Int = 0,
     val offsetRow: Int = 0,
-    val extentCols: Int = boardCols,
-    val extentRows: Int = boardRows,
+    val extentCols: Int = boardSize.value,
+    val extentRows: Int = boardSize.value,
 )
