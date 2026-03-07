@@ -14,15 +14,16 @@ import com.skdassoc.tsumegolet.model.KifuData
 
 @Composable
 fun QuestionScene(kifu: KifuData) {
-    BoxWithConstraints( contentAlignment = Alignment.Center) {
+    BoxWithConstraints(contentAlignment = Alignment.Center) {
         val maxW = maxWidth
+        val maxH = maxHeight
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
             Text(kifu.title, fontSize = 20.sp)
-            GoBoard(kifu = kifu, maxWidth = maxW)
+            GoBoard(kifu = kifu, maxWidth = maxW, maxHeight = maxH / 2)
             Text(kifu.description, fontSize = 16.sp)
         }
     }

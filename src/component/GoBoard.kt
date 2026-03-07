@@ -1,6 +1,7 @@
 package com.skdassoc.tsumegolet.component
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,15 +12,14 @@ import androidx.compose.ui.unit.dp
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.computeBoardLayout
 
-private val boardSize = 0.9f
 private val starSize = 0.15f
 
 @Composable
-fun GoBoard(kifu: KifuData, maxWidth: Dp) {
+fun GoBoard(kifu: KifuData, maxWidth: Dp, maxHeight: Dp) {
     val layout = computeBoardLayout(kifu)
-    val cellSize = maxWidth * boardSize / layout.cols
+    val cellSize = minOf(maxWidth / layout.cols, maxHeight / layout.rows)
 
-    Canvas(modifier = Modifier.size(cellSize * layout.cols, cellSize * layout.rows)) {
+    Canvas(modifier = Modifier.padding(12.dp).size(cellSize * layout.cols, cellSize * layout.rows)) {
         val cell = size.width / layout.cols
         val stroke = 1.dp.toPx()
 
