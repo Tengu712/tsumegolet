@@ -51,7 +51,7 @@ private fun Content() {
         listOf(
             KifuData(
                 "詰め碁 1",
-                BoardSize.Nineteen,
+                boardSize = BoardSize.Nineteen,
                 offsetCol = 0,
                 offsetRow = 0,
                 extentCols = 7,
@@ -59,7 +59,7 @@ private fun Content() {
             ),
             KifuData(
                 "詰め碁 2",
-                BoardSize.Nineteen,
+                boardSize = BoardSize.Nineteen,
                 offsetCol = 12,
                 offsetRow = 12,
                 extentCols = 7,
@@ -67,7 +67,7 @@ private fun Content() {
             ),
             KifuData(
                 "詰め碁 3",
-                BoardSize.Nineteen,
+                boardSize = BoardSize.Nineteen,
                 offsetCol = 5,
                 offsetRow = 3,
                 extentCols = 9,

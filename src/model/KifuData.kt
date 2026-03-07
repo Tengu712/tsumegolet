@@ -2,6 +2,7 @@ package com.skdassoc.tsumegolet.model
 
 data class KifuData(
     val title: String,
+    val description: String = "",
 
     // 碁盤のサイズ
     val boardSize: BoardSize,

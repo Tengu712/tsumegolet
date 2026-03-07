@@ -7,7 +7,7 @@ class BoardLayoutTest {
     // 9路盤
     @Test
     fun fullBoard() {
-        val layout = computeBoardLayout(KifuData("", BoardSize.Nine))
+        val layout = computeBoardLayout(KifuData("", boardSize = BoardSize.Nine))
         assertEquals(9, layout.cols)
         assertEquals(9, layout.rows)
         assertEquals(0.5f, layout.left)
@@ -20,7 +20,7 @@ class BoardLayoutTest {
     // 13路盤の左下7x7
     @Test
     fun bottomLeftClip() {
-        val layout = computeBoardLayout(KifuData("", BoardSize.Thirteen, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
+        val layout = computeBoardLayout(KifuData("", boardSize = BoardSize.Thirteen, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
         assertEquals(7, layout.cols)
         assertEquals(7, layout.rows)
         assertEquals(0.5f, layout.left)
@@ -33,7 +33,7 @@ class BoardLayoutTest {
     // 19路盤の左下7x7
     @Test
     fun bottomLeftClip2() {
-        val layout = computeBoardLayout(KifuData("", BoardSize.Nineteen, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
+        val layout = computeBoardLayout(KifuData("", boardSize = BoardSize.Nineteen, offsetCol = 0, offsetRow = 0, extentCols = 7, extentRows = 7))
         assertEquals(7, layout.cols)
         assertEquals(7, layout.rows)
         assertEquals(0.5f, layout.left)
@@ -46,7 +46,7 @@ class BoardLayoutTest {
     // 19路盤の右上7x5
     @Test
     fun topRightClip() {
-        val layout = computeBoardLayout(KifuData("", BoardSize.Nineteen, offsetCol = 12, offsetRow = 14, extentCols = 7, extentRows = 5))
+        val layout = computeBoardLayout(KifuData("", boardSize = BoardSize.Nineteen, offsetCol = 12, offsetRow = 14, extentCols = 7, extentRows = 5))
         assertEquals(7, layout.cols)
         assertEquals(5, layout.rows)
         assertEquals(0.0f, layout.left)
@@ -59,7 +59,7 @@ class BoardLayoutTest {
     // 19路盤の中央9x8
     @Test
     fun centerClip() {
-        val layout = computeBoardLayout(KifuData("", BoardSize.Nineteen, offsetCol = 5, offsetRow = 7, extentCols = 9, extentRows = 8))
+        val layout = computeBoardLayout(KifuData("", boardSize = BoardSize.Nineteen, offsetCol = 5, offsetRow = 7, extentCols = 9, extentRows = 8))
         assertEquals(9, layout.cols)
         assertEquals(8, layout.rows)
         assertEquals(0.0f, layout.left)
