@@ -12,4 +12,5 @@ data class KifuData(
     val offsetRow: Int = 0,
     val extentCols: Int = boardSize.value,
     val extentRows: Int = boardSize.value,
+    val stones: List<Stone> = emptyList(),
 )

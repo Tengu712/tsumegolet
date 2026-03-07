@@ -23,6 +23,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.skdassoc.tsumegolet.model.BoardSize
 import com.skdassoc.tsumegolet.model.KifuData
+import com.skdassoc.tsumegolet.model.Stone
+import com.skdassoc.tsumegolet.model.StoneColor
 import com.skdassoc.tsumegolet.scene.ListScene
 import com.skdassoc.tsumegolet.scene.QuestionScene
 
@@ -56,6 +58,17 @@ private fun Content() {
                 offsetRow = 0,
                 extentCols = 7,
                 extentRows = 7,
+                stones =
+                    listOf(
+                        Stone(0, 6, StoneColor.Black),
+                        Stone(1, 6, StoneColor.Black),
+                        Stone(2, 6, StoneColor.Black),
+                        Stone(0, 5, StoneColor.White),
+                        Stone(1, 5, StoneColor.White),
+                        Stone(2, 5, StoneColor.Black),
+                        Stone(0, 4, StoneColor.White),
+                        Stone(1, 4, StoneColor.Black),
+                    ),
             ),
             KifuData(
                 "詰め碁 2",
@@ -64,6 +77,15 @@ private fun Content() {
                 offsetRow = 12,
                 extentCols = 7,
                 extentRows = 7,
+                stones =
+                    listOf(
+                        Stone(18, 18, StoneColor.Black),
+                        Stone(17, 18, StoneColor.Black),
+                        Stone(18, 17, StoneColor.White),
+                        Stone(17, 17, StoneColor.Black),
+                        Stone(16, 17, StoneColor.White),
+                        Stone(18, 16, StoneColor.White),
+                    ),
             ),
             KifuData(
                 "詰め碁 3",
@@ -72,6 +94,17 @@ private fun Content() {
                 offsetRow = 3,
                 extentCols = 9,
                 extentRows = 6,
+                stones =
+                    listOf(
+                        Stone(7, 8, StoneColor.Black),
+                        Stone(8, 8, StoneColor.Black),
+                        Stone(9, 8, StoneColor.White),
+                        Stone(7, 7, StoneColor.White),
+                        Stone(8, 7, StoneColor.Black),
+                        Stone(9, 7, StoneColor.White),
+                        Stone(7, 6, StoneColor.Black),
+                        Stone(8, 6, StoneColor.White),
+                    ),
             ),
         )
     val navController = rememberNavController()

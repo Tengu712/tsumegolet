@@ -7,12 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.skdassoc.tsumegolet.model.KifuData
+import com.skdassoc.tsumegolet.model.StoneColor
 import com.skdassoc.tsumegolet.model.computeBoardLayout
 
 private val starSize = 0.15f
+private val stoneSize = 0.5f
 
 @Composable
 fun GoBoard(kifu: KifuData, maxWidth: Dp, maxHeight: Dp) {
@@ -44,6 +47,24 @@ fun GoBoard(kifu: KifuData, maxWidth: Dp, maxHeight: Dp) {
             val x = col * cell + cell / 2
             val y = row * cell + cell / 2
             drawCircle(Color.Black, radius = cell * starSize, center = Offset(x, y))
+        }
+
+        for (stone in layout.stones) {
+            val x = stone.col * cell + cell / 2
+            val y = stone.row * cell + cell / 2
+            val radius = cell * stoneSize
+            when (stone.color) {
+                StoneColor.Black -> drawCircle(Color.Black, radius = radius, center = Offset(x, y))
+                StoneColor.White -> {
+                    drawCircle(Color.White, radius = radius, center = Offset(x, y))
+                    drawCircle(
+                        Color.Black,
+                        radius = radius,
+                        center = Offset(x, y),
+                        style = Stroke(width = stroke),
+                    )
+                }
+            }
         }
     }
 }

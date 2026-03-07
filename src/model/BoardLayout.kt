@@ -8,6 +8,7 @@ data class BoardLayout(
     val top: Float,
     val bottom: Float,
     val stars: List<Pair<Int, Int>>,
+    val stones: List<Stone>,
 )
 
 private fun boardStars(boardSize: BoardSize): List<Pair<Int, Int>> =
@@ -33,18 +34,28 @@ fun computeBoardLayout(kifuData: KifuData): BoardLayout {
     val rows = kifuData.extentRows
     val boardSize = kifuData.boardSize.value
 
+    val isInCanvas: (Int, Int) -> Boolean = { col, row ->
+        col >= kifuData.offsetCol &&
+            col < kifuData.offsetCol + cols &&
+            row >= kifuData.offsetRow &&
+            row < kifuData.offsetRow + rows
+    }
+
+    val convertToCanvas: (Int, Int) -> Pair<Int, Int> = { col, row ->
+        Pair(col - kifuData.offsetCol, rows - 1 - (row - kifuData.offsetRow))
+    }
+
     val stars =
         boardStars(kifuData.boardSize)
-            .filter { (boardCol, boardRow) ->
-                boardCol >= kifuData.offsetCol &&
-                    boardCol < kifuData.offsetCol + cols &&
-                    boardRow >= kifuData.offsetRow &&
-                    boardRow < kifuData.offsetRow + rows
-            }
-            .map { (boardCol, boardRow) ->
-                val canvasCol = boardCol - kifuData.offsetCol
-                val canvasRow = rows - 1 - (boardRow - kifuData.offsetRow)
-                Pair(canvasCol, canvasRow)
+            .filter { (col, row) -> isInCanvas(col, row) }
+            .map { (col, row) -> convertToCanvas(col, row) }
+
+    val stones =
+        kifuData.stones
+            .filter { isInCanvas(it.col, it.row) }
+            .map {
+                val (c, r) = convertToCanvas(it.col, it.row)
+                Stone(c, r, it.color)
             }
 
     return BoardLayout(
@@ -55,5 +66,6 @@ fun computeBoardLayout(kifuData: KifuData): BoardLayout {
         top = if (kifuData.offsetRow + rows < boardSize) 0f else 0.5f,
         bottom = if (kifuData.offsetRow > 0) rows.toFloat() else rows - 0.5f,
         stars = stars,
+        stones = stones,
     )
 }
