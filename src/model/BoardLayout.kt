@@ -29,42 +29,41 @@ private fun boardStars(boardSize: BoardSize): List<Pair<Int, Int>> =
             )
     }
 
-fun computeBoardLayout(kifuData: KifuData): BoardLayout {
-    val cols = kifuData.extentCols
-    val rows = kifuData.extentRows
-    val boardSize = kifuData.boardSize.value
+fun convertCoordFromBoardToCanvas(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =
+    Pair(col - kifu.offsetCol, kifu.extentRows - 1 - (row - kifu.offsetRow))
+
+fun computeBoardLayout(kifu: KifuData): BoardLayout {
+    val cols = kifu.extentCols
+    val rows = kifu.extentRows
+    val boardSize = kifu.boardSize.value
 
     val isInCanvas: (Int, Int) -> Boolean = { col, row ->
-        col >= kifuData.offsetCol &&
-            col < kifuData.offsetCol + cols &&
-            row >= kifuData.offsetRow &&
-            row < kifuData.offsetRow + rows
-    }
-
-    val convertToCanvas: (Int, Int) -> Pair<Int, Int> = { col, row ->
-        Pair(col - kifuData.offsetCol, rows - 1 - (row - kifuData.offsetRow))
+        col >= kifu.offsetCol &&
+            col < kifu.offsetCol + cols &&
+            row >= kifu.offsetRow &&
+            row < kifu.offsetRow + rows
     }
 
     val stars =
-        boardStars(kifuData.boardSize)
+        boardStars(kifu.boardSize)
             .filter { (col, row) -> isInCanvas(col, row) }
-            .map { (col, row) -> convertToCanvas(col, row) }
+            .map { (col, row) -> convertCoordFromBoardToCanvas(kifu, col, row) }
 
     val stones =
-        kifuData.stones
+        kifu.stones
             .filter { isInCanvas(it.col, it.row) }
             .map {
-                val (c, r) = convertToCanvas(it.col, it.row)
+                val (c, r) = convertCoordFromBoardToCanvas(kifu, it.col, it.row)
                 Stone(c, r, it.color)
             }
 
     return BoardLayout(
         cols = cols,
         rows = rows,
-        left = if (kifuData.offsetCol > 0) 0f else 0.5f,
-        right = if (kifuData.offsetCol + cols < boardSize) cols.toFloat() else cols - 0.5f,
-        top = if (kifuData.offsetRow + rows < boardSize) 0f else 0.5f,
-        bottom = if (kifuData.offsetRow > 0) rows.toFloat() else rows - 0.5f,
+        left = if (kifu.offsetCol > 0) 0f else 0.5f,
+        right = if (kifu.offsetCol + cols < boardSize) cols.toFloat() else cols - 0.5f,
+        top = if (kifu.offsetRow + rows < boardSize) 0f else 0.5f,
+        bottom = if (kifu.offsetRow > 0) rows.toFloat() else rows - 0.5f,
         stars = stars,
         stones = stones,
     )

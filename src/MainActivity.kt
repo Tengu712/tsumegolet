@@ -69,6 +69,9 @@ private fun Content() {
                         Stone(0, 4, StoneColor.White),
                         Stone(1, 4, StoneColor.Black),
                     ),
+                answerCol = 0,
+                answerRow = 3,
+                answerTurn = StoneColor.Black,
             ),
             KifuData(
                 "詰め碁 2",
@@ -86,6 +89,9 @@ private fun Content() {
                         Stone(16, 17, StoneColor.White),
                         Stone(18, 16, StoneColor.White),
                     ),
+                answerCol = 17,
+                answerRow = 16,
+                answerTurn = StoneColor.White,
             ),
             KifuData(
                 "詰め碁 3",
@@ -105,6 +111,9 @@ private fun Content() {
                         Stone(7, 6, StoneColor.Black),
                         Stone(8, 6, StoneColor.White),
                     ),
+                answerCol = 6,
+                answerRow = 8,
+                answerTurn = StoneColor.White,
             ),
         )
     val navController = rememberNavController()
