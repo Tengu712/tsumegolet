@@ -7,19 +7,16 @@ data class BoardLayout(
     val right: Float,
     val top: Float,
     val bottom: Float,
-    val stars: List<Pair<Int, Int>>,
+    val stars: List<CanvasCoord>,
 )
 
 fun convertStonesFromBoardToCanvas(kifu: KifuData, stones: List<Stone>): List<CanvasStone> =
     stones
-        .filter { isInCanvas(kifu, it.col, it.row) }
-        .map {
-            val (c, r) = convertCoordFromBoardToCanvas(kifu, it.col, it.row)
-            CanvasStone(c, r, it.color)
-        }
+        .filter { isInCanvas(kifu, it.coord) }
+        .map { CanvasStone(convertCoordFromBoardToCanvas(kifu, it.coord), it.color) }
 
-fun convertCoordFromCanvasToBoard(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =
-    Pair(col + kifu.offsetCol, kifu.extentRows - 1 - row + kifu.offsetRow)
+fun convertCoordFromCanvasToBoard(kifu: KifuData, coord: CanvasCoord): BoardCoord =
+    BoardCoord(coord.col + kifu.offsetCol, kifu.extentRows - 1 - coord.row + kifu.offsetRow)
 
 fun computeBoardLayout(kifu: KifuData): BoardLayout {
     val cols = kifu.extentCols
@@ -28,8 +25,8 @@ fun computeBoardLayout(kifu: KifuData): BoardLayout {
 
     val stars =
         boardStars(kifu.boardSize)
-            .filter { (col, row) -> isInCanvas(kifu, col, row) }
-            .map { (col, row) -> convertCoordFromBoardToCanvas(kifu, col, row) }
+            .filter { isInCanvas(kifu, it) }
+            .map { convertCoordFromBoardToCanvas(kifu, it) }
 
     return BoardLayout(
         cols = cols,
@@ -42,29 +39,36 @@ fun computeBoardLayout(kifu: KifuData): BoardLayout {
     )
 }
 
-private fun boardStars(boardSize: BoardSize): List<Pair<Int, Int>> =
+private fun boardStars(boardSize: BoardSize): List<BoardCoord> =
     when (boardSize) {
         BoardSize.Nine -> emptyList()
-        BoardSize.Thirteen -> listOf(Pair(3, 3), Pair(3, 9), Pair(9, 3), Pair(9, 9), Pair(6, 6))
+        BoardSize.Thirteen ->
+            listOf(
+                BoardCoord(3, 3),
+                BoardCoord(3, 9),
+                BoardCoord(9, 3),
+                BoardCoord(9, 9),
+                BoardCoord(6, 6),
+            )
         BoardSize.Nineteen ->
             listOf(
-                Pair(3, 3),
-                Pair(3, 15),
-                Pair(15, 3),
-                Pair(15, 15),
-                Pair(9, 9),
-                Pair(9, 3),
-                Pair(9, 15),
-                Pair(3, 9),
-                Pair(15, 9),
+                BoardCoord(3, 3),
+                BoardCoord(3, 15),
+                BoardCoord(15, 3),
+                BoardCoord(15, 15),
+                BoardCoord(9, 9),
+                BoardCoord(9, 3),
+                BoardCoord(9, 15),
+                BoardCoord(3, 9),
+                BoardCoord(15, 9),
             )
     }
 
-private fun isInCanvas(kifu: KifuData, col: Int, row: Int): Boolean =
-    col >= kifu.offsetCol &&
-        col < kifu.offsetCol + kifu.extentCols &&
-        row >= kifu.offsetRow &&
-        row < kifu.offsetRow + kifu.extentRows
+private fun isInCanvas(kifu: KifuData, coord: BoardCoord): Boolean =
+    coord.col >= kifu.offsetCol &&
+        coord.col < kifu.offsetCol + kifu.extentCols &&
+        coord.row >= kifu.offsetRow &&
+        coord.row < kifu.offsetRow + kifu.extentRows
 
-private fun convertCoordFromBoardToCanvas(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =
-    Pair(col - kifu.offsetCol, kifu.extentRows - 1 - (row - kifu.offsetRow))
+private fun convertCoordFromBoardToCanvas(kifu: KifuData, coord: BoardCoord): CanvasCoord =
+    CanvasCoord(coord.col - kifu.offsetCol, kifu.extentRows - 1 - (coord.row - kifu.offsetRow))

@@ -15,12 +15,12 @@ class CanvasToBoardTest {
                 extentCols = 5,
                 extentRows = 6,
             )
-        assertEquals(Pair(5, 4), convertCoordFromCanvasToBoard(kifu, 2, 3))
+        assertEquals(BoardCoord(5, 4), convertCoordFromCanvasToBoard(kifu, CanvasCoord(2, 3)))
     }
 
     @Test
     fun オフセットなしの変換() {
         val kifu = KifuData("", boardSize = BoardSize.Nine)
-        assertEquals(Pair(2, 2), convertCoordFromCanvasToBoard(kifu, 2, 6))
+        assertEquals(BoardCoord(2, 2), convertCoordFromCanvasToBoard(kifu, CanvasCoord(2, 6)))
     }
 }

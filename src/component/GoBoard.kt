@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.skdassoc.tsumegolet.model.BoardCoord
+import com.skdassoc.tsumegolet.model.CanvasCoord
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.Stone
 import com.skdassoc.tsumegolet.model.StoneColor
@@ -27,8 +29,8 @@ import com.skdassoc.tsumegolet.model.displayName
 private val starSize = 0.15f
 private val stoneSize = 0.5f
 
-private fun toPosition(cell: Float, col: Int, row: Int): Offset =
-    Offset(col * cell + cell / 2, row * cell + cell / 2)
+private fun toPosition(cell: Float, coord: CanvasCoord): Offset =
+    Offset(coord.col * cell + cell / 2, coord.row * cell + cell / 2)
 
 @Composable
 fun GoBoard(
@@ -37,7 +39,7 @@ fun GoBoard(
     turn: StoneColor,
     maxWidth: Dp,
     maxHeight: Dp,
-    onTap: (col: Int, row: Int) -> Unit,
+    onTap: (BoardCoord) -> Unit,
 ) {
     val layout = computeBoardLayout(kifu)
     val stonesOnCanvas = convertStonesFromBoardToCanvas(kifu, stones)
@@ -49,11 +51,9 @@ fun GoBoard(
                 Modifier.size(cellSize * layout.cols, cellSize * layout.rows).pointerInput(Unit) {
                     detectTapGestures { offset ->
                         val cell = size.width / layout.cols
-                        val colOnCanvas = (offset.x / cell).toInt()
-                        val rowOnCanvas = (offset.y / cell).toInt()
-                        val (col, row) =
-                            convertCoordFromCanvasToBoard(kifu, colOnCanvas, rowOnCanvas)
-                        onTap(col, row)
+                        val canvasCoord =
+                            CanvasCoord((offset.x / cell).toInt(), (offset.y / cell).toInt())
+                        onTap(convertCoordFromCanvasToBoard(kifu, canvasCoord))
                     }
                 }
         ) {
@@ -75,16 +75,12 @@ fun GoBoard(
                 drawLine(Color.Black, Offset(x, t), Offset(x, b), stroke)
             }
 
-            for ((col, row) in layout.stars) {
-                drawCircle(
-                    Color.Black,
-                    radius = cell * starSize,
-                    center = toPosition(cell, col, row),
-                )
+            for (star in layout.stars) {
+                drawCircle(Color.Black, radius = cell * starSize, center = toPosition(cell, star))
             }
 
             for (stone in stonesOnCanvas) {
-                val pos = toPosition(cell, stone.col, stone.row)
+                val pos = toPosition(cell, stone.coord)
                 val radius = cell * stoneSize
                 when (stone.color) {
                     StoneColor.Black -> drawCircle(Color.Black, radius = radius, center = pos)

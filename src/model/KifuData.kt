@@ -15,7 +15,6 @@ data class KifuData(
     val stones: List<Stone> = emptyList(),
 
     // 正解の手
-    val answerCol: Int = 0,
-    val answerRow: Int = 0,
+    val answer: BoardCoord = BoardCoord(0, 0),
     val answerTurn: StoneColor = StoneColor.Black,
 )

@@ -45,15 +45,15 @@ fun QuestionScene(kifu: KifuData) {
                 turn = kifu.answerTurn,
                 maxWidth = maxW,
                 maxHeight = maxH / 2,
-                onTap = { col, row ->
+                onTap = { coord ->
                     when (status) {
-                        Status.Answered, Status.Editing -> {
+                        Status.Answered,
+                        Status.Editing -> {
                             // TODO:
                         }
                         else -> {
-                            if (col == kifu.answerCol && row == kifu.answerRow) {
-                                stones =
-                                    stones + Stone(kifu.answerCol, kifu.answerRow, kifu.answerTurn)
+                            if (coord == kifu.answer) {
+                                stones = stones + Stone(kifu.answer, kifu.answerTurn)
                                 status = Status.Answered
                             } else {
                                 status = Status.Incorrected

@@ -14,11 +14,18 @@ class StoneLayoutTest {
                 offsetRow = 2,
                 extentCols = 4,
                 extentRows = 4,
-                stones = listOf(Stone(4, 3, StoneColor.Black), Stone(5, 4, StoneColor.White)),
+                stones =
+                    listOf(
+                        Stone(BoardCoord(4, 3), StoneColor.Black),
+                        Stone(BoardCoord(5, 4), StoneColor.White),
+                    ),
             )
         val stones = convertStonesFromBoardToCanvas(kifu, kifu.stones)
         assertEquals(
-            listOf(CanvasStone(1, 2, StoneColor.Black), CanvasStone(2, 1, StoneColor.White)),
+            listOf(
+                CanvasStone(CanvasCoord(1, 2), StoneColor.Black),
+                CanvasStone(CanvasCoord(2, 1), StoneColor.White),
+            ),
             stones,
         )
     }
@@ -35,13 +42,13 @@ class StoneLayoutTest {
                 extentRows = 5,
                 stones =
                     listOf(
-                        Stone(5, 0, StoneColor.Black),
-                        Stone(1, 5, StoneColor.White),
-                        Stone(2, 2, StoneColor.White),
+                        Stone(BoardCoord(5, 0), StoneColor.Black),
+                        Stone(BoardCoord(1, 5), StoneColor.White),
+                        Stone(BoardCoord(2, 2), StoneColor.White),
                     ),
             )
         val stones = convertStonesFromBoardToCanvas(kifu, kifu.stones)
-        assertEquals(listOf(CanvasStone(2, 2, StoneColor.White)), stones)
+        assertEquals(listOf(CanvasStone(CanvasCoord(2, 2), StoneColor.White)), stones)
     }
 
     @Test
@@ -56,20 +63,20 @@ class StoneLayoutTest {
                 extentRows = 4,
                 stones =
                     listOf(
-                        Stone(1, 3, StoneColor.White),
-                        Stone(1, 6, StoneColor.Black),
-                        Stone(5, 3, StoneColor.White),
-                        Stone(5, 6, StoneColor.Black),
-                        Stone(0, 0, StoneColor.White),
+                        Stone(BoardCoord(1, 3), StoneColor.White),
+                        Stone(BoardCoord(1, 6), StoneColor.Black),
+                        Stone(BoardCoord(5, 3), StoneColor.White),
+                        Stone(BoardCoord(5, 6), StoneColor.Black),
+                        Stone(BoardCoord(0, 0), StoneColor.White),
                     ),
             )
         val stones = convertStonesFromBoardToCanvas(kifu, kifu.stones)
         assertEquals(
             listOf(
-                CanvasStone(0, 3, StoneColor.White),
-                CanvasStone(0, 0, StoneColor.Black),
-                CanvasStone(4, 3, StoneColor.White),
-                CanvasStone(4, 0, StoneColor.Black),
+                CanvasStone(CanvasCoord(0, 3), StoneColor.White),
+                CanvasStone(CanvasCoord(0, 0), StoneColor.Black),
+                CanvasStone(CanvasCoord(4, 3), StoneColor.White),
+                CanvasStone(CanvasCoord(4, 0), StoneColor.Black),
             ),
             stones,
         )
