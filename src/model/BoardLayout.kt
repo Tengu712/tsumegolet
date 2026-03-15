@@ -10,12 +10,12 @@ data class BoardLayout(
     val stars: List<Pair<Int, Int>>,
 )
 
-fun convertStonesFromBoardToCanvas(kifu: KifuData, stones: List<Stone>): List<Stone> =
+fun convertStonesFromBoardToCanvas(kifu: KifuData, stones: List<Stone>): List<CanvasStone> =
     stones
         .filter { isInCanvas(kifu, it.col, it.row) }
         .map {
             val (c, r) = convertCoordFromBoardToCanvas(kifu, it.col, it.row)
-            Stone(c, r, it.color)
+            CanvasStone(c, r, it.color)
         }
 
 fun convertCoordFromBoardToCanvas(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =

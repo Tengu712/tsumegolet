@@ -17,7 +17,10 @@ class StoneLayoutTest {
                 stones = listOf(Stone(4, 3, StoneColor.Black), Stone(5, 4, StoneColor.White)),
             )
         val stones = convertStonesFromBoardToCanvas(kifu, kifu.stones)
-        assertEquals(listOf(Stone(1, 2, StoneColor.Black), Stone(2, 1, StoneColor.White)), stones)
+        assertEquals(
+            listOf(CanvasStone(1, 2, StoneColor.Black), CanvasStone(2, 1, StoneColor.White)),
+            stones,
+        )
     }
 
     @Test
@@ -38,7 +41,7 @@ class StoneLayoutTest {
                     ),
             )
         val stones = convertStonesFromBoardToCanvas(kifu, kifu.stones)
-        assertEquals(listOf(Stone(2, 2, StoneColor.White)), stones)
+        assertEquals(listOf(CanvasStone(2, 2, StoneColor.White)), stones)
     }
 
     @Test
@@ -63,10 +66,10 @@ class StoneLayoutTest {
         val stones = convertStonesFromBoardToCanvas(kifu, kifu.stones)
         assertEquals(
             listOf(
-                Stone(0, 3, StoneColor.White),
-                Stone(0, 0, StoneColor.Black),
-                Stone(4, 3, StoneColor.White),
-                Stone(4, 0, StoneColor.Black),
+                CanvasStone(0, 3, StoneColor.White),
+                CanvasStone(0, 0, StoneColor.Black),
+                CanvasStone(4, 3, StoneColor.White),
+                CanvasStone(4, 0, StoneColor.Black),
             ),
             stones,
         )
