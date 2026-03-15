@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import com.skdassoc.tsumegolet.component.GoBoard
 import com.skdassoc.tsumegolet.model.KifuData
-import com.skdassoc.tsumegolet.model.convertCoordFromBoardToCanvas
+import com.skdassoc.tsumegolet.model.Stone
 
 private enum class Status {
     Solving,
@@ -26,9 +26,6 @@ private enum class Status {
 
 @Composable
 fun QuestionScene(kifu: KifuData) {
-    val (answerCanvasCol, answerCanvasRow) =
-        convertCoordFromBoardToCanvas(kifu, kifu.answerCol, kifu.answerRow)
-
     var stones by remember { mutableStateOf(kifu.stones) }
     var status by remember { mutableStateOf(Status.Solving) }
     val editable = remember(status) { status == Status.Answered || status == Status.Editing }
@@ -49,7 +46,20 @@ fun QuestionScene(kifu: KifuData) {
                 maxWidth = maxW,
                 maxHeight = maxH / 2,
                 onTap = { col, row ->
-                    if (col == answerCanvasCol && row == answerCanvasRow) status = Status.Answered
+                    when (status) {
+                        Status.Answered, Status.Editing -> {
+                            // TODO:
+                        }
+                        else -> {
+                            if (col == kifu.answerCol && row == kifu.answerRow) {
+                                stones =
+                                    stones + Stone(kifu.answerCol, kifu.answerRow, kifu.answerTurn)
+                                status = Status.Answered
+                            } else {
+                                status = Status.Incorrected
+                            }
+                        }
+                    }
                 },
             )
             when (status) {

@@ -20,6 +20,7 @@ import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.Stone
 import com.skdassoc.tsumegolet.model.StoneColor
 import com.skdassoc.tsumegolet.model.computeBoardLayout
+import com.skdassoc.tsumegolet.model.convertCoordFromCanvasToBoard
 import com.skdassoc.tsumegolet.model.convertStonesFromBoardToCanvas
 import com.skdassoc.tsumegolet.model.displayName
 
@@ -48,7 +49,11 @@ fun GoBoard(
                 Modifier.size(cellSize * layout.cols, cellSize * layout.rows).pointerInput(Unit) {
                     detectTapGestures { offset ->
                         val cell = size.width / layout.cols
-                        onTap((offset.x / cell).toInt(), (offset.y / cell).toInt())
+                        val colOnCanvas = (offset.x / cell).toInt()
+                        val rowOnCanvas = (offset.y / cell).toInt()
+                        val (col, row) =
+                            convertCoordFromCanvasToBoard(kifu, colOnCanvas, rowOnCanvas)
+                        onTap(col, row)
                     }
                 }
         ) {

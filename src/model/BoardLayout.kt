@@ -18,8 +18,8 @@ fun convertStonesFromBoardToCanvas(kifu: KifuData, stones: List<Stone>): List<Ca
             CanvasStone(c, r, it.color)
         }
 
-fun convertCoordFromBoardToCanvas(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =
-    Pair(col - kifu.offsetCol, kifu.extentRows - 1 - (row - kifu.offsetRow))
+fun convertCoordFromCanvasToBoard(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =
+    Pair(col + kifu.offsetCol, kifu.extentRows - 1 - row + kifu.offsetRow)
 
 fun computeBoardLayout(kifu: KifuData): BoardLayout {
     val cols = kifu.extentCols
@@ -65,3 +65,6 @@ private fun isInCanvas(kifu: KifuData, col: Int, row: Int): Boolean =
         col < kifu.offsetCol + kifu.extentCols &&
         row >= kifu.offsetRow &&
         row < kifu.offsetRow + kifu.extentRows
+
+private fun convertCoordFromBoardToCanvas(kifu: KifuData, col: Int, row: Int): Pair<Int, Int> =
+    Pair(col - kifu.offsetCol, kifu.extentRows - 1 - (row - kifu.offsetRow))
