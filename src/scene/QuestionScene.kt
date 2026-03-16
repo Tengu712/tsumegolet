@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skdassoc.tsumegolet.component.GoBoard
 import com.skdassoc.tsumegolet.component.LabelButton
+import com.skdassoc.tsumegolet.component.SceneHeader
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.putOrRemoveStone
 
@@ -37,74 +37,72 @@ fun QuestionScene(kifu: KifuData, onEdit: () -> Unit, onDelete: () -> Unit) {
     var turn by remember { mutableStateOf(kifu.answerTurn) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    BoxWithConstraints(contentAlignment = Alignment.Center) {
-        val maxW = maxWidth
-        val maxH = maxHeight
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(kifu.title, fontSize = 20.sp)
-            GoBoard(
-                kifu = kifu,
-                stones = stones,
-                turn = turn,
-                maxWidth = maxW,
-                maxHeight = maxH / 2,
-                onTap = { coord ->
-                    when (status) {
-                        Status.Answered,
-                        Status.Editing -> {
-                            val (newStones, newTurn) = putOrRemoveStone(stones, turn, coord)
-                            stones = newStones
-                            turn = newTurn
-                            if (status == Status.Answered) status = Status.Editing
-                        }
-                        else -> {
-                            if (coord == kifu.answer) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        SceneHeader {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LabelButton("削除") { showDeleteDialog = true }
+                LabelButton("編集") { onEdit() }
+            }
+        }
+        BoxWithConstraints(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            val maxW = maxWidth
+            val maxH = maxHeight
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(kifu.title, fontSize = 20.sp)
+                GoBoard(
+                    kifu = kifu,
+                    stones = stones,
+                    turn = turn,
+                    maxWidth = maxW,
+                    maxHeight = maxH / 2,
+                    onTap = { coord ->
+                        when (status) {
+                            Status.Answered,
+                            Status.Editing -> {
                                 val (newStones, newTurn) = putOrRemoveStone(stones, turn, coord)
                                 stones = newStones
                                 turn = newTurn
-                                status = Status.Answered
-                            } else {
-                                status = Status.Incorrected
+                                if (status == Status.Answered) status = Status.Editing
+                            }
+                            else -> {
+                                if (coord == kifu.answer) {
+                                    val (newStones, newTurn) = putOrRemoveStone(stones, turn, coord)
+                                    stones = newStones
+                                    turn = newTurn
+                                    status = Status.Answered
+                                } else {
+                                    status = Status.Incorrected
+                                }
                             }
                         }
-                    }
-                },
-            )
-            when (status) {
-                Status.Incorrected -> Text("不正解")
-                Status.Answered -> Text("正解")
-                // NOTE: レイアウト維持のため。
-                else -> Text("")
+                    },
+                )
+                when (status) {
+                    Status.Incorrected -> Text("不正解")
+                    Status.Answered -> Text("正解")
+                    // NOTE: レイアウト維持のため。
+                    else -> Text("")
+                }
+                when (status) {
+                    Status.Answered,
+                    Status.Editing -> Text(kifu.description, fontSize = 16.sp)
+                    // NOTE: レイアウト維持のため。
+                    else -> Text("")
+                }
             }
-            when (status) {
-                Status.Answered,
-                Status.Editing -> Text(kifu.description, fontSize = 16.sp)
-                // NOTE: レイアウト維持のため。
-                else -> Text("")
-            }
         }
+    }
 
-        Row(
-            modifier = Modifier.align(Alignment.TopEnd).padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            LabelButton("編集") { onEdit() }
-            LabelButton("削除") { showDeleteDialog = true }
-        }
-
-        if (showDeleteDialog) {
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog = false },
-                text = { Text("「${kifu.title}」を削除しますか？") },
-                confirmButton = { TextButton(onClick = onDelete) { Text("削除") } },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog = false }) { Text("キャンセル") }
-                },
-            )
-        }
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            text = { Text("「${kifu.title}」を削除しますか？") },
+            confirmButton = { TextButton(onClick = onDelete) { Text("削除") } },
+            dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("キャンセル") } },
+        )
     }
 }

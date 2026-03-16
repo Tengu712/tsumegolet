@@ -1,7 +1,6 @@
 package com.skdassoc.tsumegolet.scene
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.skdassoc.tsumegolet.component.GoBoard
 import com.skdassoc.tsumegolet.component.LabelButton
 import com.skdassoc.tsumegolet.component.NumberInput
+import com.skdassoc.tsumegolet.component.SceneHeader
 import com.skdassoc.tsumegolet.model.BoardCoord
 import com.skdassoc.tsumegolet.model.BoardSize
 import com.skdassoc.tsumegolet.model.KifuData
@@ -97,12 +97,17 @@ fun EditScene(kifu: KifuData, onSave: (KifuData) -> Unit) {
             )
         else null
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        SceneHeader {
+            if (currentKifu != null) {
+                LabelButton("保存") { onSave(currentKifu) }
+            }
+        }
         Column(
             modifier =
-                Modifier.fillMaxSize()
+                Modifier.weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, end = 16.dp, top = 48.dp, bottom = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             OutlinedTextField(
@@ -208,12 +213,6 @@ fun EditScene(kifu: KifuData, onSave: (KifuData) -> Unit) {
                         },
                     )
                 }
-            }
-        }
-
-        if (currentKifu != null) {
-            LabelButton("保存", modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) {
-                onSave(currentKifu)
             }
         }
     }
