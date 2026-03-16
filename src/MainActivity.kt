@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,6 +30,8 @@ import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.scene.EditScene
 import com.skdassoc.tsumegolet.scene.ListScene
 import com.skdassoc.tsumegolet.scene.QuestionScene
+import com.skdassoc.tsumegolet.storage.loadKifuList
+import com.skdassoc.tsumegolet.storage.saveKifuList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,9 +55,14 @@ private val appColorScheme =
 
 @Composable
 private fun Content() {
-    // TODO: 記録されたデータを参照する
-    var kifuList by remember { mutableStateOf(emptyList<KifuData>()) }
+    val context = LocalContext.current
+    var kifuList by remember { mutableStateOf(loadKifuList(context)) }
     val navController = rememberNavController()
+
+    fun updateKifuList(newList: List<KifuData>) {
+        kifuList = newList
+        saveKifuList(context, newList)
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.systemBars),
@@ -81,7 +89,7 @@ private fun Content() {
                         kifu,
                         onEdit = { navController.navigate("edit/$index") },
                         onDelete = {
-                            kifuList = kifuList.toMutableList().also { it.removeAt(index!!) }
+                            updateKifuList(kifuList.toMutableList().also { it.removeAt(index!!) })
                             navController.popBackStack()
                         },
                     )
@@ -93,7 +101,7 @@ private fun Content() {
             }
             composable("edit/new") {
                 EditScene(KifuData(title = "")) { updated ->
-                    kifuList = kifuList.toMutableList().also { it.add(updated) }
+                    updateKifuList(kifuList + updated)
                     navController.popBackStack()
                 }
             }
@@ -102,7 +110,7 @@ private fun Content() {
                 val kifu = index?.let { kifuList.getOrNull(it) }
                 if (kifu != null) {
                     EditScene(kifu) { updated ->
-                        kifuList = kifuList.toMutableList().also { it[index!!] = updated }
+                        updateKifuList(kifuList.toMutableList().also { it[index!!] = updated })
                         navController.popBackStack()
                     }
                 } else {

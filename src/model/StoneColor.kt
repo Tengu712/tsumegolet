@@ -1,5 +1,8 @@
 package com.skdassoc.tsumegolet.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class StoneColor {
     Black,
     White,

@@ -1,5 +1,8 @@
 package com.skdassoc.tsumegolet.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class KifuData(
     val title: String,
     val description: String = "",

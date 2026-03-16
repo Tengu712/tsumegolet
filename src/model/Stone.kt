@@ -1,3 +1,5 @@
 package com.skdassoc.tsumegolet.model
 
-data class Stone(val coord: BoardCoord, val color: StoneColor)
+import kotlinx.serialization.Serializable
+
+@Serializable data class Stone(val coord: BoardCoord, val color: StoneColor)
