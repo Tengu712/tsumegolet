@@ -1,17 +1,28 @@
 version: '3'
 
 tasks:
-  build:
+  debug-build:
     cmds:
       - gradle assembleDebug -Pandroid.useAndroidX=true
 
+  release-build:
+    cmds:
+      - gradle assembleRelease -Pandroid.useAndroidX=true -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"
+
   run:
     deps:
-      - build
+      - debug-build
     cmds:
       - adb wait-for-device
       - adb install build/outputs/apk/debug/tsumegolet-debug.apk
       - adb shell am start -n com.skdassoc.tsumegolet/.MainActivity
+
+  install:
+    deps:
+      - release-build
+    cmds:
+      - adb wait-for-device
+      - adb install -r --user 0 build/outputs/apk/release/tsumegolet-release.apk
 
   test:
     cmds:
