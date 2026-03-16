@@ -31,7 +31,13 @@ private enum class Status {
 }
 
 @Composable
-fun QuestionScene(kifu: KifuData, onEdit: () -> Unit, onDelete: () -> Unit) {
+fun QuestionScene(
+    kifu: KifuData,
+    onEdit: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null,
+    onNext: (() -> Unit)? = null,
+    onFinish: (() -> Unit)? = null,
+) {
     var status by remember { mutableStateOf(Status.Solving) }
     var stones by remember { mutableStateOf(kifu.stones) }
     var turn by remember { mutableStateOf(kifu.answerTurn) }
@@ -40,8 +46,10 @@ fun QuestionScene(kifu: KifuData, onEdit: () -> Unit, onDelete: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         SceneHeader {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                LabelButton("削除") { showDeleteDialog = true }
-                LabelButton("編集") { onEdit() }
+                if (onDelete != null) LabelButton("削除") { showDeleteDialog = true }
+                if (onEdit != null) LabelButton("編集") { onEdit() }
+                if (onFinish != null) LabelButton("終了") { onFinish() }
+                if (onNext != null) LabelButton("次へ") { onNext() }
             }
         }
         BoxWithConstraints(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
@@ -101,7 +109,7 @@ fun QuestionScene(kifu: KifuData, onEdit: () -> Unit, onDelete: () -> Unit) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             text = { Text("「${kifu.title}」を削除しますか？") },
-            confirmButton = { TextButton(onClick = onDelete) { Text("削除") } },
+            confirmButton = { TextButton(onClick = { onDelete?.invoke() }) { Text("削除") } },
             dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("キャンセル") } },
         )
     }

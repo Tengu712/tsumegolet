@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBars
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -54,9 +57,16 @@ private val appColorScheme =
     )
 
 @Composable
+private fun NotFound() =
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Not Found")
+    }
+
+@Composable
 private fun Content() {
     val context = LocalContext.current
     var kifuList by remember { mutableStateOf(loadKifuList(context)) }
+    var quizOrder by remember { mutableStateOf<List<Int>>(emptyList()) }
     val navController = rememberNavController()
 
     fun updateKifuList(newList: List<KifuData>) {
@@ -71,7 +81,20 @@ private fun Content() {
         NavHost(navController = navController, startDestination = "home") {
             composable("home") {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Button(onClick = { navController.navigate("list") }) { Text("一覧") }
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Button(onClick = { navController.navigate("list") }) { Text("一覧") }
+                        Button(
+                            onClick = {
+                                quizOrder = kifuList.indices.shuffled()
+                                navController.navigate("quiz/0")
+                            }
+                        ) {
+                            Text("問題")
+                        }
+                    }
                 }
             }
             composable("list") {
@@ -99,6 +122,38 @@ private fun Content() {
                     }
                 }
             }
+            composable("quiz/{position}") { backStackEntry ->
+                val position =
+                    backStackEntry.arguments?.getString("position")?.toIntOrNull() ?: Int.MAX_VALUE
+                // 終了
+                if (position >= quizOrder.size || position < 0) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            Button(
+                                onClick = { navController.popBackStack("home", inclusive = false) }
+                            ) {
+                                Text("終了")
+                            }
+                        }
+                    }
+                }
+                // 問題
+                else {
+                    val kifu = kifuList.getOrNull(quizOrder[position])
+                    if (kifu != null) {
+                        QuestionScene(
+                            kifu,
+                            onNext = { navController.navigate("quiz/${position + 1}") },
+                            onFinish = { navController.popBackStack("home", inclusive = false) },
+                        )
+                    } else {
+                        NotFound()
+                    }
+                }
+            }
             composable("edit/new") {
                 EditScene(KifuData(title = "")) { updated ->
                     updateKifuList(kifuList + updated)
@@ -114,9 +169,7 @@ private fun Content() {
                         navController.popBackStack()
                     }
                 } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Not Found")
-                    }
+                    NotFound()
                 }
             }
         }
