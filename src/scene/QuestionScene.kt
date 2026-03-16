@@ -1,6 +1,5 @@
 package com.skdassoc.tsumegolet.scene
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,12 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skdassoc.tsumegolet.component.GoBoard
+import com.skdassoc.tsumegolet.component.LabelButton
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.putOrRemoveStone
 
@@ -87,11 +84,6 @@ fun QuestionScene(kifu: KifuData, onEdit: () -> Unit) {
             }
         }
 
-        Text(
-            "編集",
-            color = Color.Black,
-            style = TextStyle(textDecoration = TextDecoration.Underline),
-            modifier = Modifier.align(Alignment.TopEnd).padding(12.dp).clickable { onEdit() },
-        )
+        LabelButton("編集", modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) { onEdit() }
     }
 }

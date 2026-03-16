@@ -1,6 +1,5 @@
 package com.skdassoc.tsumegolet.scene
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -22,18 +21,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.skdassoc.tsumegolet.component.GoBoard
+import com.skdassoc.tsumegolet.component.LabelButton
+import com.skdassoc.tsumegolet.component.NumberInput
 import com.skdassoc.tsumegolet.model.BoardCoord
 import com.skdassoc.tsumegolet.model.BoardSize
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.StoneColor
 import com.skdassoc.tsumegolet.model.displayName
 import com.skdassoc.tsumegolet.model.putOrRemoveStone
+
+private fun validateDimension(
+    extent: Int?,
+    offset: Int?,
+    answer: Int?,
+    boardSize: Int,
+): Triple<Boolean, Boolean, Boolean> {
+    val extentValid = extent != null && extent in 1..boardSize
+    val offsetValid =
+        offset != null && extent != null && offset >= 0 && offset + extent <= boardSize
+    val answerValid =
+        answer != null && offset != null && extent != null && answer in offset until offset + extent
+    return Triple(extentValid, offsetValid, answerValid)
+}
 
 @Composable
 fun EditScene(kifu: KifuData, onSave: (KifuData) -> Unit) {
@@ -57,28 +69,10 @@ fun EditScene(kifu: KifuData, onSave: (KifuData) -> Unit) {
     val answerCol = answerColStr.toIntOrNull()
     val answerRow = answerRowStr.toIntOrNull()
 
-    val extentColsValid = extentCols != null && extentCols in 1..boardSize.value
-    val extentRowsValid = extentRows != null && extentRows in 1..boardSize.value
-    val offsetColValid =
-        offsetCol != null &&
-            extentCols != null &&
-            offsetCol >= 0 &&
-            offsetCol + extentCols <= boardSize.value
-    val offsetRowValid =
-        offsetRow != null &&
-            extentRows != null &&
-            offsetRow >= 0 &&
-            offsetRow + extentRows <= boardSize.value
-    val answerColValid =
-        answerCol != null &&
-            offsetCol != null &&
-            extentCols != null &&
-            answerCol in offsetCol until offsetCol + extentCols
-    val answerRowValid =
-        answerRow != null &&
-            offsetRow != null &&
-            extentRows != null &&
-            answerRow in offsetRow until offsetRow + extentRows
+    val (extentColsValid, offsetColValid, answerColValid) =
+        validateDimension(extentCols, offsetCol, answerCol, boardSize.value)
+    val (extentRowsValid, offsetRowValid, answerRowValid) =
+        validateDimension(extentRows, offsetRow, answerRow, boardSize.value)
     val allValid =
         extentColsValid &&
             extentRowsValid &&
@@ -137,40 +131,36 @@ fun EditScene(kifu: KifuData, onSave: (KifuData) -> Unit) {
 
             Text("表示サイズ")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = extentColsStr,
-                    onValueChange = { extentColsStr = it },
-                    label = { Text("行") },
-                    isError = !extentColsValid,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                )
-                OutlinedTextField(
+                NumberInput(
+                    label = "行",
                     value = extentRowsStr,
                     onValueChange = { extentRowsStr = it },
-                    label = { Text("列") },
                     isError = !extentRowsValid,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f),
+                )
+                NumberInput(
+                    label = "列",
+                    value = extentColsStr,
+                    onValueChange = { extentColsStr = it },
+                    isError = !extentColsValid,
                     modifier = Modifier.weight(1f),
                 )
             }
 
             Text("表示オフセット(左下原点)")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = offsetColStr,
-                    onValueChange = { offsetColStr = it },
-                    label = { Text("行") },
-                    isError = !offsetColValid,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                )
-                OutlinedTextField(
+                NumberInput(
+                    label = "行",
                     value = offsetRowStr,
                     onValueChange = { offsetRowStr = it },
-                    label = { Text("列") },
                     isError = !offsetRowValid,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f),
+                )
+                NumberInput(
+                    label = "列",
+                    value = offsetColStr,
+                    onValueChange = { offsetColStr = it },
+                    isError = !offsetColValid,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -222,15 +212,9 @@ fun EditScene(kifu: KifuData, onSave: (KifuData) -> Unit) {
         }
 
         if (currentKifu != null) {
-            Text(
-                "保存",
-                color = Color.Black,
-                style = TextStyle(textDecoration = TextDecoration.Underline),
-                modifier =
-                    Modifier.align(Alignment.TopEnd).padding(12.dp).clickable {
-                        onSave(currentKifu)
-                    },
-            )
+            LabelButton("保存", modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) {
+                onSave(currentKifu)
+            }
         }
     }
 }
