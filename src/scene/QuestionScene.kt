@@ -3,9 +3,12 @@ package com.skdassoc.tsumegolet.scene
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +31,11 @@ private enum class Status {
 }
 
 @Composable
-fun QuestionScene(kifu: KifuData, onEdit: () -> Unit) {
+fun QuestionScene(kifu: KifuData, onEdit: () -> Unit, onDelete: () -> Unit) {
     var status by remember { mutableStateOf(Status.Solving) }
     var stones by remember { mutableStateOf(kifu.stones) }
     var turn by remember { mutableStateOf(kifu.answerTurn) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     BoxWithConstraints(contentAlignment = Alignment.Center) {
         val maxW = maxWidth
@@ -84,6 +88,23 @@ fun QuestionScene(kifu: KifuData, onEdit: () -> Unit) {
             }
         }
 
-        LabelButton("編集", modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) { onEdit() }
+        Row(
+            modifier = Modifier.align(Alignment.TopEnd).padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            LabelButton("編集") { onEdit() }
+            LabelButton("削除") { showDeleteDialog = true }
+        }
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                text = { Text("「${kifu.title}」を削除しますか？") },
+                confirmButton = { TextButton(onClick = onDelete) { Text("削除") } },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) { Text("キャンセル") }
+                },
+            )
+        }
     }
 }

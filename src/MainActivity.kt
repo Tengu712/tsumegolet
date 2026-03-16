@@ -77,7 +77,14 @@ private fun Content() {
                 val index = backStackEntry.arguments?.getString("index")?.toIntOrNull()
                 val kifu = index?.let { kifuList.getOrNull(it) }
                 if (kifu != null) {
-                    QuestionScene(kifu, onEdit = { navController.navigate("edit/$index") })
+                    QuestionScene(
+                        kifu,
+                        onEdit = { navController.navigate("edit/$index") },
+                        onDelete = {
+                            kifuList = kifuList.toMutableList().also { it.removeAt(index!!) }
+                            navController.popBackStack()
+                        },
+                    )
                 } else {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Not Found")
