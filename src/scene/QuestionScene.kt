@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.skdassoc.tsumegolet.component.GoBoard
 import com.skdassoc.tsumegolet.model.KifuData
 import com.skdassoc.tsumegolet.model.Stone
+import com.skdassoc.tsumegolet.model.flipped
 
 private enum class Status {
     Solving,
@@ -26,8 +27,9 @@ private enum class Status {
 
 @Composable
 fun QuestionScene(kifu: KifuData) {
-    var stones by remember { mutableStateOf(kifu.stones) }
     var status by remember { mutableStateOf(Status.Solving) }
+    var stones by remember { mutableStateOf(kifu.stones) }
+    var turn by remember { mutableStateOf(kifu.answerTurn) }
     val editable = remember(status) { status == Status.Answered || status == Status.Editing }
 
     BoxWithConstraints(contentAlignment = Alignment.Center) {
@@ -42,19 +44,27 @@ fun QuestionScene(kifu: KifuData) {
             GoBoard(
                 kifu = kifu,
                 stones = stones,
-                turn = kifu.answerTurn,
+                turn = turn,
                 maxWidth = maxW,
                 maxHeight = maxH / 2,
                 onTap = { coord ->
                     when (status) {
                         Status.Answered,
                         Status.Editing -> {
-                            // TODO:
+                            val index = stones.indexOfFirst { it.coord == coord }
+                            if (index >= 0) {
+                                stones = stones.toMutableList().also { it.removeAt(index) }
+                            } else {
+                                stones = stones.toMutableList().also { it.add(Stone(coord, turn)) }
+                                turn = turn.flipped
+                            }
+                            if (status == Status.Answered) status = Status.Editing
                         }
                         else -> {
                             if (coord == kifu.answer) {
-                                stones = stones + Stone(kifu.answer, kifu.answerTurn)
                                 status = Status.Answered
+                                stones = stones.toMutableList().also { it.add(Stone(coord, turn)) }
+                                turn = turn.flipped
                             } else {
                                 status = Status.Incorrected
                             }
