@@ -70,11 +70,7 @@ private fun Content() {
                 ListScene(
                     kifuList,
                     onSelect = { index -> navController.navigate("question/$index") },
-                    onAdd = {
-                        val newIndex = kifuList.size
-                        kifuList = kifuList.toMutableList().also { it.add(KifuData(title = "")) }
-                        navController.navigate("edit/$newIndex")
-                    },
+                    onAdd = { navController.navigate("edit/new") },
                 )
             }
             composable("question/{index}") { backStackEntry ->
@@ -86,6 +82,12 @@ private fun Content() {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Not Found")
                     }
+                }
+            }
+            composable("edit/new") {
+                EditScene(KifuData(title = "")) { updated ->
+                    kifuList = kifuList.toMutableList().also { it.add(updated) }
+                    navController.popBackStack()
                 }
             }
             composable("edit/{index}") { backStackEntry ->
