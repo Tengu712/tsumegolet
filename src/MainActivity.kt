@@ -30,9 +30,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.skdassoc.tsumegolet.model.KifuData
+import com.skdassoc.tsumegolet.model.transformKifu
 import com.skdassoc.tsumegolet.scene.EditScene
 import com.skdassoc.tsumegolet.scene.ListScene
 import com.skdassoc.tsumegolet.scene.QuestionScene
+import com.skdassoc.tsumegolet.scene.QuizSettingScene
 import com.skdassoc.tsumegolet.storage.loadKifuList
 import com.skdassoc.tsumegolet.storage.saveKifuList
 
@@ -67,6 +69,8 @@ private fun Content() {
     val context = LocalContext.current
     var kifuList by remember { mutableStateOf(loadKifuList(context)) }
     var quizOrder by remember { mutableStateOf<List<Int>>(emptyList()) }
+    var quizRotations by remember { mutableStateOf<List<Int>>(emptyList()) }
+    var quizSwaps by remember { mutableStateOf<List<Boolean>>(emptyList()) }
     val navController = rememberNavController()
 
     fun updateKifuList(newList: List<KifuData>) {
@@ -89,7 +93,7 @@ private fun Content() {
                         Button(
                             onClick = {
                                 quizOrder = kifuList.indices.shuffled()
-                                navController.navigate("quiz/0")
+                                navController.navigate("quiz-setting")
                             }
                         ) {
                             Text("問題")
@@ -102,6 +106,19 @@ private fun Content() {
                     kifuList,
                     onSelect = { index -> navController.navigate("question/$index") },
                     onAdd = { navController.navigate("edit/new") },
+                )
+            }
+            composable("quiz-setting") {
+                QuizSettingScene(
+                    onDecided = { rotation, swap ->
+                        quizRotations =
+                            if (rotation) List(kifuList.size) { (0..3).random() }
+                            else List(kifuList.size) { 0 }
+                        quizSwaps =
+                            if (swap) List(kifuList.size) { listOf(true, false).random() }
+                            else List(kifuList.size) { false }
+                        navController.navigate("quiz/0")
+                    }
                 )
             }
             composable("question/{index}") { backStackEntry ->
@@ -142,7 +159,14 @@ private fun Content() {
                 }
                 // 問題
                 else {
-                    val kifu = kifuList.getOrNull(quizOrder[position])
+                    val kifu =
+                        kifuList.getOrNull(quizOrder[position])?.let {
+                            transformKifu(
+                                it,
+                                quizRotations.getOrElse(position) { 0 },
+                                quizSwaps.getOrElse(position) { false },
+                            )
+                        }
                     if (kifu != null) {
                         QuestionScene(
                             kifu,
