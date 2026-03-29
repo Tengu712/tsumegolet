@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,8 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -59,6 +65,35 @@ private val appColorScheme =
     )
 
 @Composable
+private fun NavigationScreen(content: @Composable () -> Unit) {
+    var isResumed by remember { mutableStateOf(false) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            isResumed = event == Lifecycle.Event.ON_RESUME
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    Box(
+        modifier =
+            if (!isResumed)
+                Modifier.fillMaxSize().pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent(PointerEventPass.Initial).changes.forEach {
+                                it.consume()
+                            }
+                        }
+                    }
+                }
+            else Modifier.fillMaxSize()
+    ) {
+        content()
+    }
+}
+
+@Composable
 private fun NotFound() =
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text("Not Found")
@@ -84,116 +119,141 @@ private fun Content() {
     ) {
         NavHost(navController = navController, startDestination = "home") {
             composable("home") {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        Button(onClick = { navController.navigate("list") }) { Text("一覧") }
-                        Button(
-                            onClick = {
-                                quizOrder = kifuList.indices.shuffled()
-                                navController.navigate("quiz-setting")
-                            }
-                        ) {
-                            Text("問題")
-                        }
-                    }
-                }
-            }
-            composable("list") {
-                ListScene(
-                    kifuList,
-                    onSelect = { index -> navController.navigate("question/$index") },
-                    onAdd = { navController.navigate("edit/new") },
-                )
-            }
-            composable("quiz-setting") {
-                QuizSettingScene(
-                    onDecided = { rotation, swap ->
-                        quizRotations =
-                            if (rotation) List(kifuList.size) { (0..3).random() }
-                            else List(kifuList.size) { 0 }
-                        quizSwaps =
-                            if (swap) List(kifuList.size) { listOf(true, false).random() }
-                            else List(kifuList.size) { false }
-                        navController.navigate("quiz/0")
-                    }
-                )
-            }
-            composable("question/{index}") { backStackEntry ->
-                val index = backStackEntry.arguments?.getString("index")?.toIntOrNull()
-                val kifu = index?.let { kifuList.getOrNull(it) }
-                if (kifu != null) {
-                    QuestionScene(
-                        kifu,
-                        onEdit = { navController.navigate("edit/$index") },
-                        onDelete = {
-                            updateKifuList(kifuList.toMutableList().also { it.removeAt(index!!) })
-                            navController.popBackStack()
-                        },
-                    )
-                } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Not Found")
-                    }
-                }
-            }
-            composable("quiz/{position}") { backStackEntry ->
-                val position =
-                    backStackEntry.arguments?.getString("position")?.toIntOrNull() ?: Int.MAX_VALUE
-                // 終了
-                if (position >= quizOrder.size || position < 0) {
+                NavigationScreen {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
+                            Button(onClick = { navController.navigate("list") }) { Text("一覧") }
                             Button(
-                                onClick = { navController.popBackStack("home", inclusive = false) }
+                                onClick = {
+                                    quizOrder = kifuList.indices.shuffled()
+                                    navController.navigate("quiz-setting")
+                                }
                             ) {
-                                Text("終了")
+                                Text("問題")
                             }
                         }
                     }
                 }
-                // 問題
-                else {
-                    val kifu =
-                        kifuList.getOrNull(quizOrder[position])?.let {
-                            transformKifu(
-                                it,
-                                quizRotations.getOrElse(position) { 0 },
-                                quizSwaps.getOrElse(position) { false },
-                            )
+            }
+            composable("list") {
+                NavigationScreen {
+                    ListScene(
+                        kifuList,
+                        onSelect = { index -> navController.navigate("question/$index") },
+                        onAdd = { navController.navigate("edit/new") },
+                    )
+                }
+            }
+            composable("quiz-setting") {
+                NavigationScreen {
+                    QuizSettingScene(
+                        onDecided = { rotation, swap ->
+                            quizRotations =
+                                if (rotation) List(kifuList.size) { (0..3).random() }
+                                else List(kifuList.size) { 0 }
+                            quizSwaps =
+                                if (swap) List(kifuList.size) { listOf(true, false).random() }
+                                else List(kifuList.size) { false }
+                            navController.navigate("quiz/0")
                         }
+                    )
+                }
+            }
+            composable("question/{index}") { backStackEntry ->
+                NavigationScreen {
+                    val index = backStackEntry.arguments?.getString("index")?.toIntOrNull()
+                    val kifu = index?.let { kifuList.getOrNull(it) }
                     if (kifu != null) {
                         QuestionScene(
                             kifu,
-                            onNext = { navController.navigate("quiz/${position + 1}") },
-                            onFinish = { navController.popBackStack("home", inclusive = false) },
+                            onEdit = { navController.navigate("edit/$index") },
+                            onDelete = {
+                                updateKifuList(
+                                    kifuList.toMutableList().also { it.removeAt(index!!) }
+                                )
+                                navController.popBackStack()
+                            },
                         )
                     } else {
-                        NotFound()
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text("Not Found")
+                        }
+                    }
+                }
+            }
+            composable("quiz/{position}") { backStackEntry ->
+                NavigationScreen {
+                    val position =
+                        backStackEntry.arguments?.getString("position")?.toIntOrNull()
+                            ?: Int.MAX_VALUE
+                    // 終了
+                    if (position >= quizOrder.size || position < 0) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                Button(
+                                    onClick = {
+                                        navController.popBackStack("home", inclusive = false)
+                                    }
+                                ) {
+                                    Text("終了")
+                                }
+                            }
+                        }
+                    }
+                    // 問題
+                    else {
+                        val kifu =
+                            kifuList.getOrNull(quizOrder[position])?.let {
+                                transformKifu(
+                                    it,
+                                    quizRotations.getOrElse(position) { 0 },
+                                    quizSwaps.getOrElse(position) { false },
+                                )
+                            }
+                        if (kifu != null) {
+                            QuestionScene(
+                                kifu,
+                                onNext = { navController.navigate("quiz/${position + 1}") },
+                                onFinish = { navController.popBackStack("home", inclusive = false) },
+                            )
+                        } else {
+                            NotFound()
+                        }
                     }
                 }
             }
             composable("edit/new") {
-                EditScene(KifuData(title = "")) { updated ->
-                    updateKifuList(kifuList + updated)
-                    navController.popBackStack()
+                NavigationScreen {
+                    EditScene(KifuData(title = "")) { updated ->
+                        updateKifuList(kifuList + updated)
+                        navController.popBackStack()
+                    }
                 }
             }
             composable("edit/{index}") { backStackEntry ->
-                val index = backStackEntry.arguments?.getString("index")?.toIntOrNull()
-                val kifu = index?.let { kifuList.getOrNull(it) }
-                if (kifu != null) {
-                    EditScene(kifu) { updated ->
-                        updateKifuList(kifuList.toMutableList().also { it[index!!] = updated })
-                        navController.popBackStack()
+                NavigationScreen {
+                    val index = backStackEntry.arguments?.getString("index")?.toIntOrNull()
+                    val kifu = index?.let { kifuList.getOrNull(it) }
+                    if (kifu != null) {
+                        EditScene(kifu) { updated ->
+                            updateKifuList(kifuList.toMutableList().also { it[index!!] = updated })
+                            navController.popBackStack()
+                        }
+                    } else {
+                        NotFound()
                     }
-                } else {
-                    NotFound()
                 }
             }
         }
