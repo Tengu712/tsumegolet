@@ -1,5 +1,9 @@
 # Tsumegolet
 
+<div align="center">
+<img src="./screenshot.png" width="30%">
+</div>
+
 自分用の詰碁練習Androidアプリ
 
 ## Build
